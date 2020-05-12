@@ -1,0 +1,59 @@
+<dashboard>
+  <label>Responder</label>
+  <!-- First row of a single comment -->
+  <!-- Second row of 2 panels -->
+  <row>
+    <panel>
+      <html>
+      <h2>
+      RESPONDER
+      </h2>
+      <ul>
+          <li>Visualizar el estado de los controles en la categoría de Responder.</li>
+      </ul>
+    </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>Responder</title>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" Función=Respond"Resultado"!="N/A"  
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| stats count(Subcategoría)</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="rangeColors">["#FF3029","#FFB029","#4FCC58"]</option>
+        <option name="rangeValues">[0,8,16]</option>
+        <option name="colorMode">block</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="showSparkline">1</option>
+        <option name="useColors">1</option>
+        <option name="drilldown">none</option>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="underLabel">de 16 controles</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Media de subcategorias de Responder</title>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" "Función"=Respond
+| stats avg(Resultado) BY Categoría</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="charting.chart">bar</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+</dashboard>

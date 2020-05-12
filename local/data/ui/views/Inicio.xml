@@ -1,0 +1,835 @@
+<dashboard>
+  <label>Inicio</label>
+  <row>
+    <panel>
+      <title>Bienvenidos</title>
+      <html>
+      <h2>
+      Representación de cada color
+      </h2>
+      <ul>
+          <li>NIVEL 0 Nulo (Negro)</li>
+          <li>NIVEL 1 Inicial (Rojo)</li>
+          <li>NIVEL 2 Repetible (Naranja)</li>
+          <li>NIVEL 3 Definido (Amarillo)</li>
+          <li>NIVEL 4 Gestionado (Verde claro)</li>
+          <li>NIVEL 5 Optimizado (Verde oscuro)</li>
+      </ul>
+    </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Cumplimiento de controles del NIST</title>
+      <single>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" "Resultado"!="N/A"  
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| stats count(Subcategoría)</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">219</option>
+        <option name="rangeColors">["#FF3029","#FFB029","#4FCC58"]</option>
+        <option name="rangeValues">[0,80,180]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="underLabel">de 108 controles</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Resultado Medio actual</title>
+      <chart>
+        <title>El resultado actual en el que se encuentra la empresa es:</title>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" 
+| eventstats max(_time) as maxtime
+| where _time=maxtime | stats avg(Resultado) as Resu 
+| eval value=(Resu*5)/3 
+| table value</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+          <done>
+            <set token="search_results">$resultado_medio$</set>
+          </done>
+        </search>
+        <option name="charting.chart">markerGauge</option>
+        <option name="charting.chart.rangeValues">[0,0.11,1,2,3,4,5]</option>
+        <option name="charting.chart.style">minimal</option>
+        <option name="charting.gaugeColors">["0x000000","0xFF3029","0xf7912c","0xebe42d","0xc2da8a","0x7e9f44"]</option>
+        <option name="height">228</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Resultado Medio deseado</title>
+      <chart>
+        <title>El resultado deseado en el que quiere encontrarse la empresa es:</title>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" 
+| eventstats max(_time) as maxtime
+| where _time=maxtime | stats avg(Objetivo) as Resu 
+| eval value=(Resu*5)/3 
+| table value</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="charting.chart">markerGauge</option>
+        <option name="charting.chart.rangeValues">[0,0.11,1,2,3,4,5]</option>
+        <option name="charting.chart.style">minimal</option>
+        <option name="charting.gaugeColors">["0x000000","0xFF3029","0xf7912c","0xebe42d","0xc2da8a","0x7e9f44"]</option>
+        <option name="height">228</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+      <h2>
+      En esta sección se visualiza cada Función y su nivel de madurez medio
+      </h2>
+      <ul>
+          <li>Entender la distribución de los niveles de madurez de cada Función</li>
+      </ul>
+    </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>Función con nivel más bajo</title>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" 
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| stats avg(Resultado) as r by Función 
+| eventstats min(r) as m
+| where r=m 
+| table Función</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">154</option>
+        <option name="rangeColors">["0xFF4925","0x555555"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Categoría con nivel más alto</title>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" 
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| stats avg(Resultado) as r by Función 
+| eventstats max(r) as m
+| where r=m 
+| table Función</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">150</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">0</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Identificar:</title>
+      <single>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" Función=Identify
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| stats avg(Resultado) as Resu 
+| eval value=(Resu*5)/3 
+| table value</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0.00</option>
+        <option name="rangeColors">["0x000000","0xFF3029","0xf7912c","0xebe42d","0xc2da8a","0x7e9f44","0x555555"]</option>
+        <option name="rangeValues">[0,1,2,3,4,5]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="underLabel">/ de 5</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Proteger:</title>
+      <single>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" Función=Protect
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| stats avg(Resultado) as Resu
+| eval value=(Resu*5)/3 
+| table value</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0.00</option>
+        <option name="rangeColors">["0x000000","0xFF3029","0xf7912c","0xebe42d","0xc2da8a","0x7e9f44"]</option>
+        <option name="rangeValues">[0,1,2,3,4,5]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+        <option name="underLabel">/ de 5</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Detectar:</title>
+      <single>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" Función=Detect
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| stats avg(Resultado) as Resu
+| eval value=(Resu*5)/3 
+| table value</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0.00</option>
+        <option name="rangeColors">["0x000000","0xFF3029","0xf7912c","0xebe42d","0xc2da8a","0x7e9f44"]</option>
+        <option name="rangeValues">[0,1,2,3,4,5]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+        <option name="underLabel">/ de 5</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Responder:</title>
+      <single>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" Función=Respond
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| stats avg(Resultado) as Resu
+| eval value=(Resu*5)/3 
+| table value</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0.00</option>
+        <option name="rangeColors">["0x000000","0xFF3029","0xf7912c","0xebe42d","0xc2da8a","0x7e9f44"]</option>
+        <option name="rangeValues">[0,1,2,3,4,5]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+        <option name="underLabel">/ de 5</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Recuperar</title>
+      <single>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" Función=Recovery
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| stats avg(Resultado) as Resu
+| eval value=(Resu*5)/3 
+| table value</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0.00</option>
+        <option name="rangeColors">["0x000000","0xFF3029","0xf7912c","0xebe42d","0xc2da8a","0x7e9f44"]</option>
+        <option name="rangeValues">[0,1,2,3,4,5]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+        <option name="underLabel">/ de 5</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Visualización por estado de madurez DESEADO</title>
+      <html>
+    </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>Función con nivel más bajo</title>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" 
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| stats avg(Objetivo) as r by Función 
+| eventstats min(r) as m
+| where r=m 
+| table Función</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">154</option>
+        <option name="rangeColors">["#FF4925"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Categoría con nivel más alto</title>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" 
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| stats avg(Objetivo) as r by Función 
+| eventstats max(r) as m
+| where r=m 
+| table Función</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">150</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">0</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Identificar:</title>
+      <single>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" Función=Identify
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| stats avg(Objetivo) as Resu
+| eval value=(Resu*5)/3 
+| table value</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0.00</option>
+        <option name="rangeColors">["0x000000","0xFF3029","0xf7912c","0xebe42d","0xc2da8a","0x7e9f44"]</option>
+        <option name="rangeValues">[0,1,2,3,4,5]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+        <option name="underLabel">/ de 5</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Proteger:</title>
+      <single>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" Función=Protect
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| stats avg(Objetivo) as Resu
+| eval value=(Resu*5)/3 
+| table value</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0.00</option>
+        <option name="rangeColors">["0x000000","0xFF3029","0xf7912c","0xebe42d","0xc2da8a","0x7e9f44"]</option>
+        <option name="rangeValues">[0,1,2,3,4,5]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+        <option name="underLabel">/ de 5</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Detectar:</title>
+      <single>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" Función=Detect
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| stats avg(Objetivo) as Resu
+| eval value=(Resu*5)/3 
+| table value</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0.00</option>
+        <option name="rangeColors">["0x000000","0xFF3029","0xf7912c","0xebe42d","0xc2da8a","0x7e9f44"]</option>
+        <option name="rangeValues">[0,1,2,3,4,5]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+        <option name="underLabel">/ de 5</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Responder:</title>
+      <single>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" Función=Respond
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| stats avg(Objetivo) as Resu
+| eval value=(Resu*5)/3 
+| table value</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0.00</option>
+        <option name="rangeColors">["0x000000","0xFF3029","0xf7912c","0xebe42d","0xc2da8a","0x7e9f44"]</option>
+        <option name="rangeValues">[0,1,2,3,4,5]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+        <option name="underLabel">/ de 5</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Recuperar</title>
+      <single>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" Función=Recovery
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| stats avg(Objetivo) as Resu
+| eval value=(Resu*5)/3 
+| table value</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0.00</option>
+        <option name="rangeColors">["0x000000","0xFF3029","0xf7912c","0xebe42d","0xc2da8a","0x7e9f44"]</option>
+        <option name="rangeValues">[0,1,2,3,4,5]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+        <option name="underLabel">/ de 5</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Media de subcategorías ACTUAL</title>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" "Función"=*  
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| stats avg(Resultado) as Actual avg(Objetivo) as Objetivo by Función, Categoría 
+| eval Valor_Actual=(Actual*5)/3 
+| eval Valor_Objetivo=(Objetivo*5)/3 
+| table Función, Categoría, Valor_Actual, Valor_Objetivo</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="color" field="Función">
+          <colorPalette type="map">{"Identify":#1E93C7,"Respond":#D7563C,"Recovery":#32A360,"Protect":#6A5C9E,"Detect":#F2B827}</colorPalette>
+        </format>
+        <format type="color" field="Media">
+          <colorPalette type="list">[#000000,#FF3029,#F7912C,#EBE42D,#C2DA8A,#7E9F44]</colorPalette>
+          <scale type="threshold">0,0.11,1,2,3,4,5</scale>
+        </format>
+        <format type="color" field="Actual">
+          <colorPalette type="list">[#000000,#FF3029,#F7912C,#EBE42D,#C2DA8A,#7E9F44]</colorPalette>
+          <scale type="threshold">0.11,1,2,3,4</scale>
+        </format>
+        <format type="color" field="Objetivo">
+          <colorPalette type="list">[#000000,#FF3029,#F7912C,#EBE42D,#C2DA8A,#7E9F44]</colorPalette>
+          <scale type="threshold">0.11,1,2,3,4</scale>
+        </format>
+        <format type="color" field="Valor_Actual">
+          <colorPalette type="list">[#000000,#FF3029,#F7912C,#EBE42D,#C2DA8A,#7E9F44]</colorPalette>
+          <scale type="threshold">0.11,1,2,3,4</scale>
+        </format>
+        <format type="color" field="Valor_Objetivo">
+          <colorPalette type="list">[#000000,#FF3029,#F7912C,#EBE42D,#C2DA8A,#7E9F44]</colorPalette>
+          <scale type="threshold">0.11,1,2,3,4</scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Visualización por estado de madurez</title>
+      <html>
+    </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Resultado de madurez: 0</title>
+      <chart>
+        <title>Controles con niveles de madurez igual a 0 son bajo</title>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" "Función"=* "Resultado"=0  
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| top limit=20 "Función"</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.fieldColors">{"Identify":#1E93C7,"Respond":#D7563C, "Recovery":#32A360,"Protect":#6A5C9E,"Detect":#F2B827}</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="height">229</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Resultado de madurez: 1</title>
+      <chart>
+        <title>Nivel de madurez 1 es bajo-medio</title>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" "Función"=* "Resultado"=1  
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| top limit=20 "Función"</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.fieldColors">{"Identify":#1E93C7,"Respond":#D7563C, "Recovery":#32A360,"Protect":#6A5C9E,"Detect":#F2B827}</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="height">243</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Resultado de madurez: 2</title>
+      <chart>
+        <title>Niveles de madurex igual a 2 representan un valor medio</title>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" "Función"=* "Resultado"=2  
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| top limit=20 "Función"</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.fieldColors">{"Identify":#1E93C7,"Respond":#D7563C, "Recovery":#32A360,"Protect":#6A5C9E,"Detect":#F2B827}</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Resutlado igual a 3</title>
+      <chart>
+        <title>Categorías con niveles más altos</title>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" "Función"=* "Resultado"=3 
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| top limit=20 "Función"</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.fieldColors">{"Identify":#1E93C7,"Respond":#D7563C, "Recovery":#32A360,"Protect":#6A5C9E,"Detect":#F2B827}</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Resultado de madurez: 4</title>
+      <chart>
+        <title>Controles con niveles de madurez igual a 0 son bajo</title>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" "Función"=* "Resultado"=4  
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| top limit=20 "Función"</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.fieldColors">{"Identify":#1E93C7,"Respond":#D7563C, "Recovery":#32A360,"Protect":#6A5C9E,"Detect":#F2B827}</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="height">229</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Resultado de madurez: 5</title>
+      <chart>
+        <title>Controles con niveles de madurez igual a 5 son bajo</title>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" "Función"=* "Resultado"=5  
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| top limit=20 "Función"</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.fieldColors">{"Identify":#1E93C7,"Respond":#D7563C, "Recovery":#32A360,"Protect":#6A5C9E,"Detect":#F2B827}</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="height">229</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Subcategoría, funciones y sus medias</title>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" "Función"=* 
+| eventstats max(_time) as maxtime
+| where _time=maxtime  
+|chart avg(Resultado) as resultado by Categoría Función</query>
+          <earliest>$earliest$</earliest>
+          <latest>$latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">-45</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.fieldColors">{"Identify":#1E93C7,"Respond":#D7563C, "Recovery":#32A360,"Protect":#6A5C9E,"Detect":#F2B827}</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="height">300</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title></title>
+      <html>
+      <body>
+        <img src="/static/app/polar_app/color_relacion1.jpg" width="100"/>
+      </body>
+    </html>
+    </panel>
+  </row>
+</dashboard>

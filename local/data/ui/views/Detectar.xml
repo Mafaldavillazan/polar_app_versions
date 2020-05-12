@@ -1,0 +1,59 @@
+<dashboard>
+  <label>Detectar</label>
+  <!-- First row of a single comment -->
+  <!-- Second row of 2 panels -->
+  <row>
+    <panel>
+      <html>
+      <h2>
+      DETECTAR
+      </h2>
+      <ul>
+          <li>Esta página pretede visualizar cual es el estado de la función Identificar</li>
+      </ul>
+    </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>Proteger</title>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" Función=Protect "Resultado"!="N/A"  
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| stats count(Subcategoría)</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="rangeColors">["#FF3029","#FFB029","#4FCC58"]</option>
+        <option name="rangeValues">[0,20,39]</option>
+        <option name="colorMode">block</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="showSparkline">1</option>
+        <option name="useColors">1</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="underLabel">de 6 controles</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Media de subcategorias de Detectar</title>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" "Función"=Detect
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| stats avg(Resultado) BY Categoría</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="charting.chart">bar</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+</dashboard>
