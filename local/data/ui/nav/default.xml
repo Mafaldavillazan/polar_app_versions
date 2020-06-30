@@ -1,14 +1,9 @@
 <nav search_view="search" color="#57A5FF">
   <view name="Inicio" default='true' />
-  <view name="pruebas" />
   <view name="Identificar" />
   <view name="Proteger" />
   <view name="Detectar" />
   <view name="Responder" />
   <view name="Recuperar" />
   <view name="Historico" />
-  <collection label= "manuales">
-    <a href="http://google.com">Manual</a>
-    <view name="nist_basic_view" />
-  </collection>
 </nav>
