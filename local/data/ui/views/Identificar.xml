@@ -1,7 +1,21 @@
-<dashboard>
+<form>
   <label>Identificar</label>
   <!-- First row of a single comment -->
   <!-- Second row of 2 panels -->
+  <!-- identificar -->
+  <search>
+    <query>source="Datos_Splunk_limpios.csv" Función=Identify
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| stats avg(Objetivo) as Obj
+| eval valueO=(Obj*5)/3 
+| eval ObjetivoId=round(valueO,1) 
+     </query>
+    <progress>
+      <set token="tokObejId">$result.ObjetivoId$</set>
+    </progress>
+  </search>
+  <fieldset submitButton="false"></fieldset>
   <row>
     <panel>
       <html>
@@ -40,19 +54,195 @@
   </row>
   <row>
     <panel>
+      <title>Identificar</title>
+      <viz type="horseshoe_meter_app.horseshoe_meter">
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" Función=Identify
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| stats avg(Resultado) as Resu 
+| eval valueP=(Resu*5)/3 
+| eval Actual=round(valueP,1) 
+| table Actual
+      </query>
+          <earliest></earliest>
+          <latest></latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="horseshoe_meter_app.horseshoe_meter.backgroundColor">#ffff</option>
+        <option name="horseshoe_meter_app.horseshoe_meter.caption">/ $tokObejId$</option>
+        <option name="horseshoe_meter_app.horseshoe_meter.dialColor">#c1c1c1</option>
+        <option name="horseshoe_meter_app.horseshoe_meter.maxRangeColor">#555</option>
+        <option name="horseshoe_meter_app.horseshoe_meter.maxRangeThreshold">5</option>
+        <option name="horseshoe_meter_app.horseshoe_meter.maxValue">$tokObejId$</option>
+        <option name="horseshoe_meter_app.horseshoe_meter.midRangeColor">#FF7043</option>
+        <option name="horseshoe_meter_app.horseshoe_meter.midRangeThreshold">1</option>
+        <option name="horseshoe_meter_app.horseshoe_meter.minRangeColor">#F44336</option>
+        <option name="horseshoe_meter_app.horseshoe_meter.minValue">0</option>
+        <option name="horseshoe_meter_app.horseshoe_meter.thresholdStyle">realValue</option>
+        <option name="horseshoe_meter_app.horseshoe_meter.useRangemap">true</option>
+        <option name="horseshoe_meter_app.horseshoe_meter.valueColor">#ffff</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </viz>
+    </panel>
+    <panel>
+      <table>
+        <title>Media de subcategorías ACTUAL</title>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" "Función"=Identify  
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| stats avg(Resultado) as Actual avg(Objetivo) as Objetivo by Función, Categoría 
+| eval Valor_Actual=round((Actual*5)/3,2)
+| eval Valor_Objetivo=round((Objetivo*5)/3,2)
+| table Función, Categoría, Valor_Actual, Valor_Objetivo</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="color" field="Función">
+          <colorPalette type="map">{"Identify":#1E93C7,"Respond":#D7563C,"Recovery":#32A360,"Protect":#6A5C9E,"Detect":#F2B827}</colorPalette>
+        </format>
+        <format type="color" field="Media">
+          <colorPalette type="list">[#000000,#FF3029,#F7912C,#EBE42D,#C2DA8A,#7E9F44]</colorPalette>
+          <scale type="threshold">0,0.11,1,2,3,4,5</scale>
+        </format>
+        <format type="color" field="Actual">
+          <colorPalette type="list">[#000000,#FF3029,#F7912C,#EBE42D,#C2DA8A,#7E9F44]</colorPalette>
+          <scale type="threshold">0.11,1,2,3,4</scale>
+        </format>
+        <format type="color" field="Objetivo">
+          <colorPalette type="list">[#000000,#FF3029,#F7912C,#EBE42D,#C2DA8A,#7E9F44]</colorPalette>
+          <scale type="threshold">0.11,1,2,3,4</scale>
+        </format>
+        <format type="color" field="Valor_Actual">
+          <colorPalette type="list">[#000000,#FF3029,#F7912C,#EBE42D,#C2DA8A,#7E9F44]</colorPalette>
+          <scale type="threshold">0.11,1,2,3,4</scale>
+        </format>
+        <format type="color" field="Valor_Objetivo">
+          <colorPalette type="list">[#000000,#FF3029,#F7912C,#EBE42D,#C2DA8A,#7E9F44]</colorPalette>
+          <scale type="threshold">0.11,1,2,3,4</scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
       <chart>
         <title>Media de subcategorias de Identificar</title>
         <search>
           <query>source="Datos_Splunk_limpios.csv" "Función"=Identify
 | eventstats max(_time) as maxtime
-| where _time=maxtime | stats avg(Resultado) BY Categoría</query>
+| where _time=maxtime 
+| stats avg(Resultado) as Actual by Categoría 
+| eval Valor_Actual=round((Actual*5)/3,2) 
+| table Categoría Valor_Actual</query>
           <earliest>0</earliest>
           <latest></latest>
         </search>
         <option name="charting.chart">bar</option>
-        <option name="charting.drilldown">none</option>
+        <option name="charting.drilldown">all</option>
+        <option name="height">437</option>
         <option name="refresh.display">progressbar</option>
+        <drilldown>
+          <set token="ejemplo">$click.value$</set>
+        </drilldown>
       </chart>
     </panel>
   </row>
-</dashboard>
+  <row>
+    <panel>
+      <input type="dropdown" token="categoria">
+        <label>Categoria</label>
+        <choice value="ID-AM">Administracion de activos</choice>
+        <choice value="ID-BE">Ambiente de negocio</choice>
+        <choice value="ID-GV">Gobierno</choice>
+        <choice value="ID-RA">Evaluación de riesgo</choice>
+        <choice value="ID-RM">Estrategia de administración de riesgo</choice>
+        <choice value="ID-SC">Análisis de riesgo en la cadena de suminstro</choice>
+        <choice value="*">TODOS</choice>
+        <initialValue>*</initialValue>
+      </input>
+      <table>
+        <title>Media de subcategorías ACTUAL</title>
+        <search>
+          <query>source="Datos_Splunk_limpios.csv" "Función"=Identify, categoria_id=$categoria$ numero_id=*
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| stats avg(Resultado) as Actual avg(Objetivo) as Objetivo by Categoría, Subcategoría
+| eval Valor_Actual=round((Actual*5)/3,2)
+| eval Valor_Objetivo=round((Objetivo*5)/3,2)
+| table Categoría, Subcategoría, Valor_Actual, Valor_Objetivo</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="color" field="Función">
+          <colorPalette type="map">{"Identify":#1E93C7,"Respond":#D7563C,"Recovery":#32A360,"Protect":#6A5C9E,"Detect":#F2B827}</colorPalette>
+        </format>
+        <format type="color" field="Media">
+          <colorPalette type="list">[#000000,#FF3029,#F7912C,#EBE42D,#C2DA8A,#7E9F44]</colorPalette>
+          <scale type="threshold">0,0.11,1,2,3,4,5</scale>
+        </format>
+        <format type="color" field="Actual">
+          <colorPalette type="list">[#000000,#FF3029,#F7912C,#EBE42D,#C2DA8A,#7E9F44]</colorPalette>
+          <scale type="threshold">0.11,1,2,3,4</scale>
+        </format>
+        <format type="color" field="Objetivo">
+          <colorPalette type="list">[#000000,#FF3029,#F7912C,#EBE42D,#C2DA8A,#7E9F44]</colorPalette>
+          <scale type="threshold">0.11,1,2,3,4</scale>
+        </format>
+        <format type="color" field="Valor_Actual">
+          <colorPalette type="list">[#000000,#FF3029,#F7912C,#EBE42D,#C2DA8A,#7E9F44]</colorPalette>
+          <scale type="threshold">0.11,1,2,3,4</scale>
+        </format>
+        <format type="color" field="Valor_Objetivo">
+          <colorPalette type="list">[#000000,#FF3029,#F7912C,#EBE42D,#C2DA8A,#7E9F44]</colorPalette>
+          <scale type="threshold">0.11,1,2,3,4</scale>
+        </format>
+        <format type="color" field="Categoría">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <drilldown>
+          <set token="identificador">$row.numero_id$</set>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <search>
+          <query> | inputlookup "identificar_reco.csv" WHERE categoria_id=$categoria$  
+| table Valor Explicación Monitorización Ejemplo</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="Definición Final">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Valor">
+          <colorPalette type="map">{"1":#BCE89E,"2":#87C75A,"3":#A2CC3E,"4":#65A637,"(DEFENIR)":#6DB7C6,"TBD":#555555}</colorPalette>
+        </format>
+      </table>
+    </panel>
+  </row>
+</form>
