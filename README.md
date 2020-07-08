@@ -18,6 +18,6 @@ Médiente el Excel proporcionado inspirado en NIST-CF, el usuario puede rellenar
 3. Subir el .CSV a Splunk y simplemente darle a siguiente
 4. Descargar las dependencias de [Horseshoe](https://splunkbase.splunk.com/app/3166/) y [Bullet graph](https://splunkbase.splunk.com/app/3144/) para que la aplicación función sin problema
 5. Acceder a la aplicación de Polar
-6. En caso de problemas, ponganse en contacto con el contacto proporcionado en esta página
+6. En caso de problemas, ponganse en contacto con el email proporcionado en la página de [Splunk](https://splunkbase.splunk.com/app/5105/)
 
 
