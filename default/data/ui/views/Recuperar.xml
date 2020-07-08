@@ -1,0 +1,249 @@
+<form>
+  <label>Recuperar</label>
+  <!-- First row of a single comment -->
+  <!-- Second row of 2 panels -->
+  <!-- identificar -->
+  <search>
+    <query>source="ControlesNIST.csv" Funcion=Recovery
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| stats avg(Objetivo) as Obj
+| eval valueO=(Obj*5)/3 
+| eval ObjetivoRec=round(valueO,1) 
+     </query>
+    <progress>
+      <set token="tokObejRec">$result.ObjetivoRec$</set>
+    </progress>
+  </search>
+  <fieldset submitButton="false"></fieldset>
+  <row>
+    <panel>
+      <html>
+      <h2>
+      Recuperar
+      </h2>
+      <ul>
+          <li>Esta página pretede visualizar cual es el estado de la función Recuperar</li>
+      </ul>
+    </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>Recuperar</title>
+        <search>
+          <query>source="ControlesNIST.csv" Funcion=Recovery"Resultado"!="N/A"  
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| stats count(Subcategoria)</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">all</option>
+        <option name="rangeColors">["#FF3029","#FFB029","#4FCC58"]</option>
+        <option name="rangeValues">[0,3,6]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="underLabel">de 6 controles</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Recuperarr</title>
+      <viz type="horseshoe_meter_app.horseshoe_meter">
+        <search>
+          <query>source="ControlesNIST.csv" Funcion=Recovery
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| stats avg(Resultado) as Resu 
+| eval valueP=(Resu*5)/3 
+| eval Actual=round(valueP,1) 
+| table Actual
+      </query>
+          <earliest></earliest>
+          <latest></latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="horseshoe_meter_app.horseshoe_meter.backgroundColor">#ffff</option>
+        <option name="horseshoe_meter_app.horseshoe_meter.caption">/ $tokObejRec$</option>
+        <option name="horseshoe_meter_app.horseshoe_meter.dialColor">#c1c1c1</option>
+        <option name="horseshoe_meter_app.horseshoe_meter.maxRangeColor">#555</option>
+        <option name="horseshoe_meter_app.horseshoe_meter.maxRangeThreshold">5</option>
+        <option name="horseshoe_meter_app.horseshoe_meter.maxValue">$tokObejRec$</option>
+        <option name="horseshoe_meter_app.horseshoe_meter.midRangeColor">#FF7043</option>
+        <option name="horseshoe_meter_app.horseshoe_meter.midRangeThreshold">1</option>
+        <option name="horseshoe_meter_app.horseshoe_meter.minRangeColor">#F44336</option>
+        <option name="horseshoe_meter_app.horseshoe_meter.minValue">0</option>
+        <option name="horseshoe_meter_app.horseshoe_meter.thresholdStyle">realValue</option>
+        <option name="horseshoe_meter_app.horseshoe_meter.useRangemap">true</option>
+        <option name="horseshoe_meter_app.horseshoe_meter.valueColor">#ffff</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </viz>
+    </panel>
+    <panel>
+      <table>
+        <title>Media de subcategorías ACTUAL</title>
+        <search>
+          <query>source="ControlesNIST.csv" "Funcion"=Recovery  
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| stats avg(Resultado) as Actual avg(Objetivo) as Objetivo by Funcion, Categoria 
+| eval Valor_Actual=round((Actual*5)/3,2)
+| eval Valor_Objetivo=round((Objetivo*5)/3,2)
+| table Funcion, Categoria, Valor_Actual, Valor_Objetivo</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="color" field="Funcion">
+          <colorPalette type="map">{"Identify":#1E93C7,"Respond":#D7563C,"Recovery":#32A360,"Protect":#6A5C9E,"Detect":#F2B827}</colorPalette>
+        </format>
+        <format type="color" field="Media">
+          <colorPalette type="list">[#000000,#FF3029,#F7912C,#EBE42D,#C2DA8A,#7E9F44]</colorPalette>
+          <scale type="threshold">0,0.11,1,2,3,4,5</scale>
+        </format>
+        <format type="color" field="Actual">
+          <colorPalette type="list">[#000000,#FF3029,#F7912C,#EBE42D,#C2DA8A,#7E9F44]</colorPalette>
+          <scale type="threshold">0.11,1,2,3,4</scale>
+        </format>
+        <format type="color" field="Objetivo">
+          <colorPalette type="list">[#000000,#FF3029,#F7912C,#EBE42D,#C2DA8A,#7E9F44]</colorPalette>
+          <scale type="threshold">0.11,1,2,3,4</scale>
+        </format>
+        <format type="color" field="Valor_Actual">
+          <colorPalette type="list">[#000000,#FF3029,#F7912C,#EBE42D,#C2DA8A,#7E9F44]</colorPalette>
+          <scale type="threshold">0.11,1,2,3,4</scale>
+        </format>
+        <format type="color" field="Valor_Objetivo">
+          <colorPalette type="list">[#000000,#FF3029,#F7912C,#EBE42D,#C2DA8A,#7E9F44]</colorPalette>
+          <scale type="threshold">0.11,1,2,3,4</scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Media de subcategorias de Recuperar</title>
+        <search>
+          <query>source="ControlesNIST.csv" "Funcion"=Recovery
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| stats avg(Resultado) as Actual by Categoria 
+| eval Valor_Actual=round((Actual*5)/3,2) 
+| table Categoria Valor_Actual</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="charting.chart">bar</option>
+        <option name="charting.drilldown">all</option>
+        <option name="height">437</option>
+        <option name="refresh.display">progressbar</option>
+        <drilldown>
+          <set token="ejemplo">$click.value$</set>
+        </drilldown>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <input type="dropdown" token="categoria">
+        <label>Categoria</label>
+        <choice value="RC-RP">Planes de recuperación</choice>
+        <choice value="RC-IM">Mejoras</choice>
+        <choice value="RC-CO">Comunicación</choice>
+        <choice value="*">TODOS</choice>
+        <initialValue>*</initialValue>
+      </input>
+      <table>
+        <title>Media de subcategorías ACTUAL</title>
+        <search>
+          <query>source="ControlesNIST.csv" "Funcion"=Recovery, categoria_id=$categoria$ 
+| eventstats max(_time) as maxtime
+| where _time=maxtime 
+| stats avg(Resultado) as Actual avg(Objetivo) as Objetivo by Categoria, Subcategoria
+| eval Valor_Actual=round((Actual*5)/3,2)
+| eval Valor_Objetivo=round((Objetivo*5)/3,2)
+| table Categoria, Subcategoria, Valor_Actual, Valor_Objetivo</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="color" field="Funcion">
+          <colorPalette type="map">{"Identify":#1E93C7,"Respond":#D7563C,"Recovery":#32A360,"Protect":#6A5C9E,"Detect":#F2B827}</colorPalette>
+        </format>
+        <format type="color" field="Media">
+          <colorPalette type="list">[#000000,#FF3029,#F7912C,#EBE42D,#C2DA8A,#7E9F44]</colorPalette>
+          <scale type="threshold">0,0.11,1,2,3,4,5</scale>
+        </format>
+        <format type="color" field="Actual">
+          <colorPalette type="list">[#000000,#FF3029,#F7912C,#EBE42D,#C2DA8A,#7E9F44]</colorPalette>
+          <scale type="threshold">0.11,1,2,3,4</scale>
+        </format>
+        <format type="color" field="Objetivo">
+          <colorPalette type="list">[#000000,#FF3029,#F7912C,#EBE42D,#C2DA8A,#7E9F44]</colorPalette>
+          <scale type="threshold">0.11,1,2,3,4</scale>
+        </format>
+        <format type="color" field="Valor_Actual">
+          <colorPalette type="list">[#000000,#FF3029,#F7912C,#EBE42D,#C2DA8A,#7E9F44]</colorPalette>
+          <scale type="threshold">0.11,1,2,3,4</scale>
+        </format>
+        <format type="color" field="Valor_Objetivo">
+          <colorPalette type="list">[#000000,#FF3029,#F7912C,#EBE42D,#C2DA8A,#7E9F44]</colorPalette>
+          <scale type="threshold">0.11,1,2,3,4</scale>
+        </format>
+        <format type="color" field="Categoria">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <drilldown>
+          <set token="identificador">$row.numero_id$</set>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <search>
+          <query>| inputlookup "reco_recuperar.csv" WHERE Categoria=$categoria$ 
+| table valor monitorizacion explicacion ejemplo</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="Definición Final">
+          <colorPalette type="sharedList"></colorPalette>
+          <scale type="sharedCategory"></scale>
+        </format>
+        <format type="color" field="Valor">
+          <colorPalette type="map">{"1":#BCE89E,"2":#87C75A,"3":#A2CC3E,"4":#65A637}</colorPalette>
+        </format>
+        <format type="color" field="valor">
+          <colorPalette type="minMidMax" maxColor="#31A35F" midColor="#FFFFFF" minColor="#F7BC38"></colorPalette>
+          <scale type="minMidMax" midValue="2.5"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+</form>
